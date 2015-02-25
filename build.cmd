@@ -1,4 +1,4 @@
-:: borrowed from:
+:: Parts borrowed from:
 ::  - https://github.com/aspnet/Caching/blob/dev/build.cmd
 ::  - https://github.com/dotnet/corefx/blob/master/build.cmd
 
@@ -35,10 +35,17 @@ IF NOT EXIST %LocalAppData%\NuGet\nuget.exe @powershell -NoProfile -ExecutionPol
 
 
 set _buildproj=%~dp0RedisMonitorParser.sln
-set _buildArgs="/p:Configuration=Release"
+set _buildConfig=Release
+set _buildArgs="/p:Configuration=%_buildConfig%"
 
 msbuild /m "%_buildproj%" %_buildArgs% %*
 
+
+:: Run tests
+
+set nunitRunner="%~dp0packages\NUnit.Runners.2.6.4\tools\nunit-console.exe"
+set testFiles="%~dp0tests\RedisMonitorParser.Tests\bin\Release\RedisMonitorParser.Tests.dll"
+%nunitRunner% %testFiles% /framework:4.5
 
 exit /b
 
