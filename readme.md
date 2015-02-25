@@ -2,6 +2,10 @@
 
 A very simple parser for Redis monitor output for .NET
 
+## Nuget package
+
+The nuget package is here: <https://www.nuget.org/packages/RedisMonitorParser/>
+
 ## Redis monitor
 
 Redis <http://redis.io> has `MONITOR` command. The output of it looks like this:
