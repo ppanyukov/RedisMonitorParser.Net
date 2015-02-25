@@ -47,5 +47,10 @@ set nunitRunner="%~dp0packages\NUnit.Runners.2.6.4\tools\nunit-console.exe"
 set testFiles="%~dp0tests\RedisMonitorParser.Tests\bin\Release\RedisMonitorParser.Tests.dll"
 %nunitRunner% %testFiles% /framework:4.5
 
+:: Pack the nuget stuff
+
+IF NOT EXIST "%~dp0build\NugetPack" md "%~dp0build\NugetPack"
+nuget pack "%~dp0src\RedisMonitorParser\RedisMonitorParser.csproj" -Prop Configuration=Release -IncludeReferencedProjects -Symbols -OutputDirectory "%~dp0build\NugetPack"
+
 exit /b
 

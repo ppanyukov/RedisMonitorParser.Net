@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>RedisMonitorParser</id>
+    <version>$version$</version>
+    <title>RedisMonitorParser</title>
+    <authors>ppanyukov</authors>
+    <owners>ppanyukov</owners>
+    <licenseUrl>https://github.com/ppanyukov/RedisMonitorParser.Net/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/ppanyukov/RedisMonitorParser.Net</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A parser of Redis MONITOR output.</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>redis tools</tags>
+  </metadata>
+</package>
