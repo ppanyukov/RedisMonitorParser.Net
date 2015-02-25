@@ -4,7 +4,7 @@
     <id>RedisMonitorParser</id>
     <version>$version$</version>
     <title>RedisMonitorParser</title>
-    <authors>ppanyukov</authors>
+    <authors>Philip Panyukov</authors>
     <owners>ppanyukov</owners>
     <licenseUrl>https://github.com/ppanyukov/RedisMonitorParser.Net/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/ppanyukov/RedisMonitorParser.Net</projectUrl>
