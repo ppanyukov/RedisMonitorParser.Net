@@ -41,7 +41,6 @@
   <ItemGroup>
     <Compile Include="NotNullAttribute.cs" />
     <Compile Include="Parser.cs" />
-    <Compile Include="ParserConfiguration.cs" />
     <Compile Include="RawMonitorLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

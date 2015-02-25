@@ -7,25 +7,21 @@
     /// </summary>
     /// <remarks>
     /// The example of the input monitor lines is as follows.
-    /// <para>
-    ///     <pre>
-    ///     [timestamp]-------[db client_IP_port]-[command]-[0-N arguments]
-    ///     1424186956.633238 [0 127.0.0.1:60475] "EXEC"
-    ///     1424186956.633238 [0 127.0.0.1:60475] "SELECT" "0"
-    ///     1424186956.633238 [0 127.0.0.1:60475] "MGET" "KEY1" "KEY2"
-    ///     1424186956.633238 [0 127.0.0.1:60475] "HGET" "KEY" "FIELD"
-    ///     </pre>
-    /// </para>
-    /// <para>
+    /// <code>
+    /// [timestamp]-------[db client_IP_port]-[command]-[0-N arguments]
+    /// 1424186956.633238 [0 127.0.0.1:60475] "EXEC"
+    /// 1424186956.633238 [0 127.0.0.1:60475] "SELECT" "0"
+    /// 1424186956.633238 [0 127.0.0.1:60475] "MGET" "KEY1" "KEY2"
+    /// 1424186956.633238 [0 127.0.0.1:60475] "HGET" "KEY" "FIELD"
+    /// </code>
     /// In the example above, this is how the above will map onto properties:
-    /// <pre>
+    /// <code>
     ///     - rawLine      -> 1424186956.633238 [0 127.0.0.1:60475] "MGET" "KEY1" "KEY2"  (the entire line)
     ///     - rawTimeStamp -> 1424186956.633238 (string)
     ///     - rawDb        -> 0 (string)
     ///     - rawCommand   -> "MGET" (string, yes with quotes)
     ///     - rawArgs      -> "KEY1" "KEY2" (string, yes with quotes)
-    /// </pre>
-    /// </para>
+    /// </code>
     /// </remarks>
     public sealed class RawMonitorLine
     {
@@ -42,7 +38,7 @@
             [NotNull] string rawTimeStamp, 
             [NotNull] string rawDb, 
             [NotNull] string rawCommand, 
-            [NotNull] string rawArgs)
+            [NotNull] string[] rawArgs)
         {
             this.RawLine = rawLine;
             this.RawTimeStamp = rawTimeStamp;
@@ -50,6 +46,30 @@
             this.RawCommand = rawCommand;
             this.RawArgs = rawArgs;
         }
+
+        /// <summary>
+        /// Gets the raw arguments for the command. This can be zero or more arguments as one string.
+        /// </summary>
+        /// <value>
+        /// The raw arguments.
+        /// </value>
+        public string[] RawArgs { get; private set; }
+
+        /// <summary>
+        /// Gets the raw command, e.g GET, MGET etc.
+        /// </summary>
+        /// <value>
+        /// The raw command.
+        /// </value>
+        public string RawCommand { get; private set; }
+
+        /// <summary>
+        /// Gets the raw database number, as a string.
+        /// </summary>
+        /// <value>
+        /// The raw database.
+        /// </value>
+        public string RawDb { get; private set; }
 
         /// <summary>
         /// Gets the entire raw monitor line, as produced by Redis.
@@ -66,29 +86,5 @@
         /// The raw time stamp.
         /// </value>
         public string RawTimeStamp { get; private set; }
-
-        /// <summary>
-        /// Gets the raw database number, as a string.
-        /// </summary>
-        /// <value>
-        /// The raw database.
-        /// </value>
-        public string RawDb { get; private set; }
-
-        /// <summary>
-        /// Gets the raw command, e.g GET, MGET etc.
-        /// </summary>
-        /// <value>
-        /// The raw command.
-        /// </value>
-        public string RawCommand { get; private set; }
-
-        /// <summary>
-        /// Gets the raw arguments for the command. This can be zero or more arguments as one string.
-        /// </summary>
-        /// <value>
-        /// The raw arguments.
-        /// </value>
-        public string RawArgs { get; private set; }
     }
 }
