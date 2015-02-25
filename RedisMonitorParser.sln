@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{1A8FA8A1-446A-4E77-A3CC-58074874D71E}"
 	ProjectSection(SolutionItems) = preProject
 		build.cmd = build.cmd
+		readme.md = readme.md
 		RedisMonitorParser.sln.DotSettings = RedisMonitorParser.sln.DotSettings
 	EndProjectSection
 EndProject
