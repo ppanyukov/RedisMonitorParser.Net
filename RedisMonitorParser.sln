@@ -3,14 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisMonitorParser", "RedisMonitorParser\RedisMonitorParser.csproj", "{4EDB4B3F-B28C-4B54-B21E-BDE9E614C4A2}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{1A8FA8A1-446A-4E77-A3CC-58074874D71E}"
 	ProjectSection(SolutionItems) = preProject
 		RedisMonitorParser.sln.DotSettings = RedisMonitorParser.sln.DotSettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisMonitorParser.Tests", "RedisMonitorParser.Tests\RedisMonitorParser.Tests.csproj", "{E6F5FE0E-DD25-486E-B1C1-52AD1CB7BA4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisMonitorParser", "src\RedisMonitorParser\RedisMonitorParser.csproj", "{4EDB4B3F-B28C-4B54-B21E-BDE9E614C4A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisMonitorParser.Tests", "tests\RedisMonitorParser.Tests\RedisMonitorParser.Tests.csproj", "{E6F5FE0E-DD25-486E-B1C1-52AD1CB7BA4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

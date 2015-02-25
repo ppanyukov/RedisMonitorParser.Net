@@ -51,7 +51,7 @@
     <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RedisMonitorParser\RedisMonitorParser.csproj">
+    <ProjectReference Include="..\..\src\RedisMonitorParser\RedisMonitorParser.csproj">
       <Project>{4edb4b3f-b28c-4b54-b21e-bde9e614c4a2}</Project>
       <Name>RedisMonitorParser</Name>
     </ProjectReference>
