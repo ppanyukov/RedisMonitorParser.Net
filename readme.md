@@ -82,8 +82,10 @@ NOTE:
 
 ## Limitations
 
-- Assumes the first quoted word after the db/IP address block to be the command name.
-- Not tested with the arguments containg raw binary strings.
+- Assumes the first quoted word after the db/IP address block to be the command name. There are very few rare commands in Redis which are composed of more than one word. For these, only the first word would be recognised as a command. The remaining words would be parsed as arguments. Everything should still work correctly but the client application would need to reconstruct the exact full command using a combination of command and args.
+- No access to client IP:port yet (because there can be a mix of IPv4 and IPv6 addresses).
+- No parsing of UNIX timestamp into any .NET date/time types, e.g. `DateTime` (yet).
+- Not tested with the arguments containg raw binary strings (yet).
 - May not work with versions of `MONITOR` output produced by redis versions earlier than 2.6.
 
 
