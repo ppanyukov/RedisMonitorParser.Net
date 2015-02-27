@@ -1,5 +1,7 @@
 ﻿namespace RedisMonitorParser
 {
+    using System.Collections.Generic;
+    using System.Text;
     using System.Text.RegularExpressions;
 
     /// <summary>
@@ -15,13 +17,6 @@
     /// </summary>
     public sealed class Parser
     {
-        /// <summary>
-        /// The regex to extract individual arguments.
-        /// The regex reads like: quote, followed by zero or more of ((witespace char or word) or (backslash followed by any char))
-        /// followed by quote.
-        /// </summary>
-        private const string RegexArgsString = @"(""([\s\w]|\\.)*"")";
-
         /// <summary>
         /// The regular expression we use to parse the line.
         /// This was borrowed and adjusted from here: https://github.com/facebookarchive/redis-faina/blob/master/redis-faina.py
@@ -45,11 +40,6 @@
         /// The quote chars we use in unquoting strings. See <see cref="Unquote" />.
         /// </summary>
         private static readonly char[] QuoteChars = { '"' };
-
-        /// <summary>
-        /// The compiled regex for extracting the arguments from the raw monitor line.
-        /// </summary>
-        private static readonly Regex RegexArgsCompiled = new Regex(RegexArgsString, RegexOptions.Compiled);
 
         /// <summary>
         /// The compiled regular expression for parsing.
@@ -79,14 +69,7 @@
                 // All the args as one string
                 var rawArgsFull = groups["args"].Value;
 
-                // Extract the arguments separately
-                var rawArgsMatches = RegexArgsCompiled.Matches(rawArgsFull);
-                var rawArgs = new string[rawArgsMatches.Count];
-                for (var i = 0; i < rawArgsMatches.Count; i++)
-                {
-                    var arg = rawArgsMatches[i].Value;
-                    rawArgs[i] = Unquote(arg);
-                }
+                var rawArgs = ExtractRawArgs(rawArgsFull);
 
                 var monitorLine = new RawMonitorLine(
                     rawLine: rawLine, 
@@ -101,6 +84,89 @@
                 // TODO: What to return if there is no match?
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Extracts arguments from the full argument string.
+        /// </summary>
+        /// <param name="rawArgsFull">The full arguments string.</param>
+        /// <returns>Array of extracted arguments.</returns>
+        private static string[] ExtractRawArgs(string rawArgsFull)
+        {
+            //// The input is like this: "arg1" "arg2" "argN"
+            //// The args are separated by space and surrounded in quotes.
+            //// The quote starts new arg.
+            //// The quote also ends the arg unless it's escaped like this "FOO \" BAR".
+            //// The escape char itself follows double-escape like this: "FOO \\ BAR"
+            //// There could be various other escapes like \xFF or \t.
+
+            const char QuoteChar = '"';
+            const char EscapeChar = '\\';
+            const char SpaceChar = ' ';
+
+            var results = new List<string>();
+            var argChars = rawArgsFull.ToCharArray();
+
+            var buffer = new StringBuilder();
+
+            for (var i = 0; i < argChars.Length; i++)
+            {
+                var c = argChars[i];
+
+                // If buffer is empty, next char starts new argument, unless this char is space or a quote.
+                if (buffer.Length == 0)
+                {
+                    if (c == SpaceChar || c == QuoteChar)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        buffer = new StringBuilder();
+                    }
+                }
+
+                if (c == EscapeChar)
+                {
+                    // expect either a \xFF form or \c where c is any other char other than 'x'.
+                    var miniBuffer = new StringBuilder();
+                    miniBuffer.Append(c);
+
+                    i++;
+                    var nextChar = argChars[i];
+                    miniBuffer.Append(nextChar);
+
+                    if (nextChar == 'x')
+                    {
+                        i++;
+                        miniBuffer.Append(argChars[i]);
+                        i++;
+                        miniBuffer.Append(argChars[i]);
+                    }
+
+                    // This one seems to work correctly with Redis-escaped chars.
+                    var unescaped = Regex.Unescape(miniBuffer.ToString());
+                    buffer.Append(unescaped);
+                    continue;
+                }
+
+                if (c == QuoteChar)
+                {
+                    results.Add(buffer.ToString());
+                    buffer = new StringBuilder();
+                    continue;
+                }
+
+                // Plain char, just add
+                buffer.Append(c);
+            }
+
+            if (buffer.Length > 0)
+            {
+                results.Add(buffer.ToString());
+            }
+
+            return results.ToArray();
         }
 
         /// <summary>

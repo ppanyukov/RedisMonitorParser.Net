@@ -18,9 +18,9 @@
                 // The client uses IPv6 address, make sure this gets parsed OK too.
                 new ParseExpectation(
                     name: "IPv6 client address - local", 
-                    input: "1424875375.201784 [0 [::]:11707] \"GET\" \"FOOBAR\"", 
+                    input: @"1424875375.201784 [0 [::]:11707] ""GET"" ""FOOBAR""", 
                     expectedResult: new RawMonitorLine(
-                        rawLine: "1424875375.201784 [0 [::]:11707] \"GET\" \"FOOBAR\"", 
+                        rawLine: @"1424875375.201784 [0 [::]:11707] ""GET"" ""FOOBAR""", 
                         rawTimeStamp: "1424875375.201784", 
                         rawDb: "0", 
                         rawCommand: "GET", 
@@ -29,9 +29,9 @@
                 // The client uses non-local IPv6 address, make sure this gets parsed OK too.
                 new ParseExpectation(
                     name: "IPv6 client address - non-local", 
-                    input: "1424875375.201784 [0 [fe80::]:11707] \"GET\" \"FOOBAR\"", 
+                    input: @"1424875375.201784 [0 [fe80::]:11707] ""GET"" ""FOOBAR""", 
                     expectedResult: new RawMonitorLine(
-                        rawLine: "1424875375.201784 [0 [fe80::]:11707] \"GET\" \"FOOBAR\"", 
+                        rawLine: @"1424875375.201784 [0 [fe80::]:11707] ""GET"" ""FOOBAR""", 
                         rawTimeStamp: "1424875375.201784", 
                         rawDb: "0", 
                         rawCommand: "GET", 
@@ -40,9 +40,9 @@
                 // Command, no args
                 new ParseExpectation(
                     name: "Command, no args", 
-                    input: "1424186960.476348 [0 127.0.0.1:60475] \"EXEC\"", 
+                    input: @"1424186960.476348 [0 127.0.0.1:60475] ""EXEC""", 
                     expectedResult: new RawMonitorLine(
-                        rawLine: "1424186960.476348 [0 127.0.0.1:60475] \"EXEC\"", 
+                        rawLine: @"1424186960.476348 [0 127.0.0.1:60475] ""EXEC""", 
                         rawTimeStamp: "1424186960.476348", 
                         rawDb: "0", 
                         rawCommand: "EXEC", 
@@ -51,9 +51,9 @@
                 // Command, 1 argument
                 new ParseExpectation(
                     name: "Command, 1 arg", 
-                    input: "1424186960.663817 [0 127.0.0.1:60475] \"GET\" \"KEY1\"", 
+                    input: @"1424186960.663817 [0 127.0.0.1:60475] ""GET"" ""KEY1""", 
                     expectedResult: new RawMonitorLine(
-                        rawLine: "1424186960.663817 [0 127.0.0.1:60475] \"GET\" \"KEY1\"", 
+                        rawLine: @"1424186960.663817 [0 127.0.0.1:60475] ""GET"" ""KEY1""", 
                         rawTimeStamp: "1424186960.663817", 
                         rawDb: "0", 
                         rawCommand: "GET", 
@@ -62,9 +62,9 @@
                 // Command, many arguments
                 new ParseExpectation(
                     name: "Command, many args", 
-                    input: "1424186960.663817 [0 127.0.0.1:60475] \"MGET\" \"KEY1\" \"KEY2\" \"KEY3\"", 
+                    input: @"1424186960.663817 [0 127.0.0.1:60475] ""MGET"" ""KEY1"" ""KEY2"" ""KEY3""", 
                     expectedResult: new RawMonitorLine(
-                        rawLine: "1424186960.663817 [0 127.0.0.1:60475] \"MGET\" \"KEY1\" \"KEY2\" \"KEY3\"", 
+                        rawLine:  @"1424186960.663817 [0 127.0.0.1:60475] ""MGET"" ""KEY1"" ""KEY2"" ""KEY3""", 
                         rawTimeStamp: "1424186960.663817", 
                         rawDb: "0", 
                         rawCommand: "MGET", 
@@ -73,29 +73,75 @@
                 // Make sure the case is preserved as per the original input
                 new ParseExpectation(
                     name: "Command, many args, mixed case", 
-                    input: "1424186960.663817 [0 127.0.0.1:60475] \"MgEt\" \"KeY1\" \"KeY2\" \"KeY3\"", 
+                    input: @"1424186960.663817 [0 127.0.0.1:60475] ""MgEt"" ""KeY1"" ""KeY2"" ""KeY3""", 
                     expectedResult: new RawMonitorLine(
-                        rawLine: "1424186960.663817 [0 127.0.0.1:60475] \"MgEt\" \"KeY1\" \"KeY2\" \"KeY3\"", 
+                        rawLine: @"1424186960.663817 [0 127.0.0.1:60475] ""MgEt"" ""KeY1"" ""KeY2"" ""KeY3""", 
                         rawTimeStamp: "1424186960.663817", 
                         rawDb: "0", 
                         rawCommand: "MgEt", 
                         rawArgs: new[] { "KeY1", "KeY2", "KeY3" })), 
 
                 // Really weird escape chars and spaces in the args.
-                // E.g: 1424186960.663817 [0 127.0.0.1:60475] "MGET" "KEY \" 1" "K\\E\Y2" "KEY3"
-                // We should get back 3 args:
-                // - "KEY \" 1"
-                // - "K\\E\Y2"
-                // - "KEY3"
+                // E.g: 1424186960.663817 [0 127.0.0.1:60475] "MGET" "KEY \" 1" "K\\E\\Y2" "KEY3"
+                // We should get back 3 args UNESCAPED:
+                // - KEY " 1
+                // - K\E\Y2
+                // - KEY3
                 new ParseExpectation(
-                    name: "Command, many args, mixed case", 
-                    input: "1424186960.663817 [0 127.0.0.1:60475] \"MGET\" \"KEY \\\" 1\" \"K\\\\E\\Y2\" \"KEY3\"", 
+                    name: "Command, escaped args #1", 
+                    input: @"1424186960.663817 [0 127.0.0.1:60475] ""MGET"" ""KEY \"" 1"" ""K\\E\\Y2"" ""KEY3""", 
                     expectedResult: new RawMonitorLine(
-                        rawLine: "1424186960.663817 [0 127.0.0.1:60475] \"MGET\" \"KEY \\\" 1\" \"K\\\\E\\Y2\" \"KEY3\"", 
+                        rawLine: @"1424186960.663817 [0 127.0.0.1:60475] ""MGET"" ""KEY \"" 1"" ""K\\E\\Y2"" ""KEY3""", 
                         rawTimeStamp: "1424186960.663817", 
                         rawDb: "0", 
                         rawCommand: "MGET", 
-                        rawArgs: new[] { "KEY \\\" 1", "K\\\\E\\Y2", "KEY3" })), 
+                        rawArgs: new[] { @"KEY "" 1", @"K\E\Y2", "KEY3" })), 
+
+                // BUG: The args with colons don't get parsed for some reason, make sure they do.
+                // 1424365673.874009 [0 127.0.0.1:28025] "GET" "FOO:.&%39:BAR" "ZOO:.&%39:XXX"
+                new ParseExpectation(
+                    name: "Command, arg with colon", 
+                    input: @"1424365673.874009 [0 127.0.0.1:28025] ""GET"" ""FOO:.&%39:BAR"" ""ZOO:.&%39:XXX""",
+                    expectedResult: new RawMonitorLine(
+                        rawLine: @"1424365673.874009 [0 127.0.0.1:28025] ""GET"" ""FOO:.&%39:BAR"" ""ZOO:.&%39:XXX""",
+                        rawTimeStamp: "1424365673.874009", 
+                        rawDb: "0", 
+                        rawCommand: "GET", 
+                        rawArgs: new[] { "FOO:.&%39:BAR", "ZOO:.&%39:XXX" })),
+
+                // Make sure double-escaped chars get parsed correctly into unescaped chars.
+                new ParseExpectation(
+                    name: "Command, arg with double-escapes", 
+                    input: @"1424365673.874009 [0 127.0.0.1:28025] ""GET"" ""FOO \\ BAR"" ""ZOO \\ XXX""",
+                    expectedResult: new RawMonitorLine(
+                        rawLine: @"1424365673.874009 [0 127.0.0.1:28025] ""GET"" ""FOO \\ BAR"" ""ZOO \\ XXX""",
+                        rawTimeStamp: "1424365673.874009", 
+                        rawDb: "0", 
+                        rawCommand: "GET", 
+                        rawArgs: new[] { @"FOO \ BAR", @"ZOO \ XXX" })),
+
+                // Edge-case of quote following double escape.
+                new ParseExpectation(
+                    name: "Command, quote following double-escape", 
+                    input: @"1424365673.874009 [0 127.0.0.1:28025] ""GET"" ""FOO \\"" ""ZOO \\""",
+                    expectedResult: new RawMonitorLine(
+                        rawLine: @"1424365673.874009 [0 127.0.0.1:28025] ""GET"" ""FOO \\"" ""ZOO \\""",
+                        rawTimeStamp: "1424365673.874009", 
+                        rawDb: "0", 
+                        rawCommand: "GET", 
+                        rawArgs: new[] { @"FOO \", @"ZOO \" })),
+
+                // Binary strings and escaped chars like tabs.
+                // These should be converted to the real chars
+                new ParseExpectation(
+                    name: "Command, binary strings and escapes", 
+                    input: "1424365673.874009 [0 127.0.0.1:28025] \"GET\" " + @"""FOO \x04 \x00 \n \t \r \xff \\ BAR"" ""ZOO \x04 \x00 \n \t \r \xff \\ XXX""",
+                    expectedResult: new RawMonitorLine(
+                        rawLine: "1424365673.874009 [0 127.0.0.1:28025] \"GET\" " + @"""FOO \x04 \x00 \n \t \r \xff \\ BAR"" ""ZOO \x04 \x00 \n \t \r \xff \\ XXX""",
+                        rawTimeStamp: "1424365673.874009", 
+                        rawDb: "0", 
+                        rawCommand: "GET", 
+                        rawArgs: new[] { "FOO \x04 \x00 \n \t \r \xff \\ BAR", "ZOO \x04 \x00 \n \t \r \xff \\ XXX" })),
             };
         }
 
