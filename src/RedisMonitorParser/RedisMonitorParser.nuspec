@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/ppanyukov/RedisMonitorParser.Net</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A parser of Redis MONITOR output.</description>
-    <releaseNotes>Initial release</releaseNotes>
+    <releaseNotes>Support for Redis-encoded binary strings and escaped chars and correct parsing of all arguments.</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>redis tools</tags>
   </metadata>

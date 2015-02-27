@@ -55,14 +55,15 @@ The parsed line will return an instance of `RawMonitorLine` with the following p
 	- RawCommand -> MGET
 	- RawArgs -> array of 
 			[
-				KEY \" 1, 
-				K\\EY2, 
+				KEY " 1, 
+				K\EY2, 
 				KEY3
 			]
 
 NOTE:
 
 - All values of fields are `strings`, and `RawArgs` is `string[]`.
+- The Redis-encoded escaped strings (such as `\\` will get unescaped).
 - The quotes around the command and arguments are stripped.
 
 
@@ -83,14 +84,17 @@ NOTE:
 
 - Reliably parses arguments with spaces, embedded quotes and the like. 
 
+- Now full support for Redis-encoded binary string and escaped chars, e.g.
+  these will get parsed and unescaped correctly: `\xff`, `\t` `\n`, `\\` and so on.
+
 
 ## Limitations
 
 - Assumes the first quoted word after the db/IP address block to be the command name. There are very few rare commands in Redis which are composed of more than one word. For these, only the first word would be recognised as a command. The remaining words would be parsed as arguments. Everything should still work correctly but the client application would need to reconstruct the exact full command using a combination of command and args.
 - No access to client IP:port yet (because there can be a mix of IPv4 and IPv6 addresses).
 - No parsing of UNIX timestamp into any .NET date/time types, e.g. `DateTime` (yet).
-- Not tested with the arguments containg raw binary strings (yet).
 - May not work with versions of `MONITOR` output produced by redis versions earlier than 2.6.
+- Limited tests with the arguments containg Redis-encoded binary strings, may still be bugs there.
 
 
 
